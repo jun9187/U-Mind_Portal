@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Mind Portal - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles to enhance or override */
+        body {
+            background-color: #f0f2f5; /* Light gray background */
+        }
+    </style>
+</head>
+<body class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="container d-flex justify-content-center">
+        <div class="card p-5 shadow-lg rounded-lg" style="width: 24rem;">
+            <h1 class="text-center text-primary mb-4 text-3xl font-bold">U-Mind Portal Login</h1>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label text-gray-700 text-sm font-semibold mb-2 block">Username or Email</label>
+                    <input type="text" class="form-control px-3 py-2 w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-500" id="username" name="username" placeholder="Enter your username or email" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label text-gray-700 text-sm font-semibold mb-2 block">Password</label>
+                    <input type="password" class="form-control px-3 py-2 w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-500" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2 rounded-md font-semibold text-lg hover:bg-blue-600 transition duration-300">Login</button>
+                <p class="text-center mt-3 text-sm"><a href="#" class="text-blue-500 hover:underline">Forgot Password?</a></p>
+                <p id="errorMessage" class="text-red-500 text-center mt-2 text-sm hidden">Invalid username or password. Please try again.</p>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (username === 'user' && password === 'password') {
+                alert('Login Successful! Redirecting to dashboard...');
+                window.location.href = 'dashboard.html';
+            } else {
+                errorMessage.classList.remove('hidden'); // Show error message (Tailwind hidden class)
+            }
+        });
+    </script>
+</body>
+</html>
