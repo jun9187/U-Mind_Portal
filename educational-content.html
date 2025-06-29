@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Mind Portal - Educational Content</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom global styles for the app (copied from app.html) */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #adb5bd;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        /* Profile Dropdown Specific Styles for Computer-Based View (copied from app.html) */
+        .profile-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+        .profile-dropdown-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            margin-right: 0.5rem;
+        }
+        .profile-name {
+            color: white;
+            margin-right: 0.5rem;
+        }
+        .dropdown-menu {
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            min-width: 160px;
+        }
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+        .dropdown-item:hover {
+            background-color: #f0f2f5;
+            color: #007bff;
+        }
+
+        /* Educational Content specific styles */
+        .content-item img {
+            height: 150px;
+            object-fit: cover;
+        }
+        .content-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body>
+    <header class="shadow-md">
+        <nav class="navbar navbar-dark bg-primary py-3">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" href="dashboard.html">U-Mind Portal</a>
+                <div class="d-flex justify-content-end align-items-center" id="navbarNav">
+                    <ul class="navbar-nav flex-row align-items-center">
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="images/default.jpg" alt="Profile Picture" class="profile-pic">
+                                <span class="profile-name">Student Name</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="profile.html">My Profile</a></li>
+                                <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="login.html">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container my-5 flex-grow">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Mental Health Educational Content</h2>
+
+        <div class="p-5 bg-white rounded-lg shadow-lg">
+            <div class="d-flex flex-wrap gap-3 mb-4">
+                <input type="text" id="searchBar" placeholder="Search content by keyword..." class="form-control flex-grow-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-500 text-lg">
+                <select id="filterCategory" class="form-select px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-500 text-lg bg-white">
+                    <option value="">All Categories</option>
+                    <option value="anxiety">Anxiety</option>
+                    <option value="depression">Depression</option>
+                    <option value="stress">Stress Management</option>
+                    <option value="mindfulness">Mindfulness</option>
+                    <option value="quizzes">Quizzes</option>
+                    <option value="videos">Videos</option>
+                </select>
+                <button id="applyFilter" class="btn btn-success px-4 py-2 rounded-md font-semibold text-lg hover:bg-green-700 transition duration-300">Apply Filter</button>
+            </div>
+
+            <div id="contentList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div class="content-item bg-gray-50 border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition duration-200" data-categories="article,anxiety,stress">
+                    <img src="images/article.jpg" alt="Article Image" class="w-full h-36">
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg text-gray-800 mb-2">Understanding Anxiety: A Comprehensive Guide</h3>
+                        <p class="text-sm text-gray-600 mb-3">Learn about common anxiety symptoms, causes, and coping strategies.</p>
+                        <a href="article-detail.html?id=1" class="read-more text-blue-600 hover:text-blue-800 font-semibold text-sm float-right">Read More →</a>
+                    </div>
+                </div>
+                <div class="content-item bg-gray-50 border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition duration-200" data-categories="video,mindfulness">
+                    <img src="images/video.jpg" alt="Video Thumbnail" class="w-full h-36">
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg text-gray-800 mb-2">Mindfulness Meditation for Beginners (Video)</h3>
+                        <p class="text-sm text-gray-600 mb-3">A guided video session to introduce you to mindfulness practices.</p>
+                        <a href="video-detail.html?id=2" class="read-more text-blue-600 hover:text-blue-800 font-semibold text-sm float-right">Watch Video →</a>
+                    </div>
+                </div>
+                <div class="content-item bg-gray-50 border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition duration-200" data-categories="infographic,stress">
+                    <img src="images/infrographic.jpeg" alt="Infographic Image" class="w-full h-36">
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg text-gray-800 mb-2">10 Ways to Manage Stress (Infographic)</h3>
+                        <p class="text-sm text-gray-600 mb-3">Quick visual tips to help reduce daily stress levels effectively.</p>
+                        <a href="infographic-detail.html?id=3" class="read-more text-blue-600 hover:text-blue-800 font-semibold text-sm float-right">View Infographic →</a>
+                    </div>
+                </div>
+                <div class="content-item bg-gray-50 border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition duration-200" data-categories="quiz,burnout">
+                    <img src="images/quiz.jpg" alt="Quiz Icon" class="w-full h-36">
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg text-gray-800 mb-2">Are You Experiencing Burnout? (Quiz)</h3>
+                        <p class="text-sm text-gray-600 mb-3">Take this short quiz to assess your burnout risk and get insights.</p>
+                        <a href="quiz-detail.html?id=4" class="read-more text-blue-600 hover:text-blue-800 font-semibold text-sm float-right">Start Quiz →</a>
+                    </div>
+                </div>
+            </div>
+
+            <p id="noContentMessage" class="text-center text-gray-600 text-lg py-12 hidden">No content found for your selection. Please try different keywords or filters.</p>
+            <p id="errorLoadingMessage" class="text-center text-red-600 text-lg py-12 hidden">Unable to load content. Please try again later.</p>
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-dark text-white">
+        <div class="container text-center">
+            <p class="mb-1">&copy; 2025 U-Mind Portal. All rights reserved.</p>
+            <p class="mb-0">
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Privacy Policy</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Terms of Service</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Contact Us</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const contentList = document.getElementById('contentList');
+            const noContentMessage = document.getElementById('noContentMessage');
+            const errorLoadingMessage = document.getElementById('errorLoadingMessage');
+            const searchBar = document.getElementById('searchBar');
+            const filterCategory = document.getElementById('filterCategory');
+            const applyFilterButton = document.getElementById('applyFilter');
+
+            const filterContent = () => {
+                const searchTerm = searchBar.value.toLowerCase();
+                const filterCat = filterCategory.value;
+                const items = document.querySelectorAll('.content-item');
+                let foundItems = 0;
+
+                items.forEach(item => {
+                    const title = item.querySelector('h3').textContent.toLowerCase();
+                    const description = item.querySelector('p').textContent.toLowerCase();
+                    const itemCategories = item.dataset.categories ? item.dataset.categories.split(',').map(cat => cat.trim()) : [];
+
+                    const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+                    const matchesFilter = filterCat === '' || itemCategories.includes(filterCat);
+
+                    if (matchesSearch && matchesFilter) {
+                        item.classList.remove('hidden');
+                        foundItems++;
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+
+                if (foundItems === 0) {
+                    noContentMessage.classList.remove('hidden');
+                } else {
+                    noContentMessage.classList.add('hidden');
+                }
+            };
+
+            applyFilterButton.addEventListener('click', filterContent);
+        });
+    </script>
+</body>
+</html>
