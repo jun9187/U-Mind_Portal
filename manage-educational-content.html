@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Mind Portal - Manage Educational Content</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom global styles for the app (copied from app.html) */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #adb5bd;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        /* Profile Dropdown Specific Styles for Computer-Based View (copied from app.html) */
+        .profile-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+        .profile-dropdown-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            margin-right: 0.5rem;
+        }
+        .profile-name {
+            color: white;
+            margin-right: 0.5rem;
+        }
+        .dropdown-menu {
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            min-width: 160px;
+        }
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+        .dropdown-item:hover {
+            background-color: #f0f2f5;
+            color: #007bff;
+        }
+
+        /* Content Management specific styles */
+        .content-management-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .content-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            background-color: #fcfcfc;
+        }
+        .content-item-row:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+        .content-item-row:hover {
+            background-color: #f0f2f5;
+        }
+        .content-item-details h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .content-item-details p {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0;
+        }
+        .content-actions .btn {
+            margin-left: 10px;
+        }
+        .message-alert {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            display: none !important; /* Always start hidden */
+        }
+        .message-alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+        .message-alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <header class="shadow-md">
+        <nav class="navbar navbar-dark bg-primary py-3">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" href="admin-dashboard.html">U-Mind Portal</a>
+                <div class="d-flex justify-content-end align-items-center" id="navbarNav">
+                    <ul class="navbar-nav flex-row align-items-center">
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="images/default.jpg" alt="Profile Picture" class="profile-pic">
+                                <span class="profile-name">System Admin</span> </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="admin-dashboard.html">Admin Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="index.html">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container my-5 flex-grow">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Manage Educational Content</h2>
+
+        <div class="p-5 bg-white rounded-lg shadow-lg content-management-container">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-b border-gray-200">
+                <h3 class="text-2xl font-semibold text-gray-800">Content List</h3>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addContentModal">Add New Content</button>
+            </div>
+
+            <div id="noContentMessage" class="message-alert hidden">
+                No educational content available. Click "Add New Content" to get started.
+            </div>
+
+            <div id="contentList">
+                </div>
+
+            <div id="globalMessage" class="message-alert hidden mt-4"></div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="addContentModal" tabindex="-1" aria-labelledby="addContentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contentModalLabel">Add New Educational Content</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="contentForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="contentId" name="contentId">
+                        <div class="mb-3">
+                            <label for="contentTitle" class="form-label">Content Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="contentTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contentType" class="form-label">Content Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="contentType" required>
+                                <option value="" disabled selected>Select Type</option>
+                                <option value="Article">Article</option>
+                                <option value="Video">Video</option>
+                                <option value="Infographic">Infographic</option>
+                                <option value="Quiz">Quiz</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contentCategory" class="form-label">Category</label>
+                            <input type="text" class="form-control" id="contentCategory" placeholder="e.g., Anxiety, Stress Management">
+                        </div>
+                        <div class="mb-3">
+                            <label for="contentDescription" class="form-label">Short Description</label>
+                            <textarea class="form-control" id="contentDescription" rows="3" placeholder="Brief summary of the content"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contentUrl" class="form-label">Content URL / File Path <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="contentUrl" placeholder="e.g., article-detail.html?id=1 or images/my_infographic.jpg" required>
+                        </div>
+                        <div id="contentFormMessage" class="message-alert hidden"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="saveContentBtn">Save Content</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteContentModal" tabindex="-1" aria-labelledby="deleteContentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteContentModalLabel">Delete Content Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete "<strong id="deleteContentTitle"></strong>"? This action cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-auto py-3 bg-dark text-white">
+        <div class="container text-center">
+            <p class="mb-1">&copy; 2025 U-Mind Portal. All rights reserved.</p>
+            <p class="mb-0">
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Privacy Policy</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Terms of Service</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Contact Us</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // UI elements
+            const contentListContainer = document.getElementById('contentList');
+            const noContentMessage = document.getElementById('noContentMessage');
+            const globalMessage = document.getElementById('globalMessage');
+
+            // Add/Edit Modal elements
+            const addContentModal = new bootstrap.Modal(document.getElementById('addContentModal'));
+            const contentModalLabel = document.getElementById('contentModalLabel');
+            const contentForm = document.getElementById('contentForm');
+            const contentIdInput = document.getElementById('contentId');
+            const contentTitleInput = document.getElementById('contentTitle');
+            const contentTypeSelect = document.getElementById('contentType');
+            const contentCategoryInput = document.getElementById('contentCategory');
+            const contentDescriptionTextarea = document.getElementById('contentDescription');
+            const contentUrlInput = document.getElementById('contentUrl');
+            const contentFormMessage = document.getElementById('contentFormMessage');
+
+            // Delete Modal elements
+            const deleteContentModal = new bootstrap.Modal(document.getElementById('deleteContentModal'));
+            const deleteContentTitleSpan = document.getElementById('deleteContentTitle');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+            let currentContentList = [
+                { id: 'c1', title: 'Understanding Anxiety: A Comprehensive Guide', type: 'Article', category: 'Anxiety', description: 'Common symptoms, causes, and coping strategies.', url: 'article-detail.html?id=1', createdDate: '2025-07-01' },
+                { id: 'c2', title: 'Mindfulness Meditation for Beginners', type: 'Video', category: 'Mindfulness', description: 'Guided session for relaxation and focus.', url: 'video-detail.html?id=2', createdDate: '2025-07-05' },
+                { id: 'c3', title: '10 Ways to Manage Stress Effectively', type: 'Infographic', category: 'Stress Management', description: 'Visual tips to reduce daily stress levels.', url: 'infographic-detail.html?id=3', createdDate: '2025-07-10' },
+                { id: 'c4', title: 'Quiz: Understanding Emotional Resilience', type: 'Quiz', category: 'Resilience', description: 'Test your knowledge on emotional resilience.', url: 'quiz-detail.html?id=4', createdDate: '2025-07-12' }
+            ];
+            let editingContentId = null; // Track which content is being edited/deleted
+
+            // --- Function to Render Content List (UC002: System displays all content items) ---
+            function renderContentList() {
+                contentListContainer.innerHTML = ''; // Clear current list
+                if (currentContentList.length === 0) {
+                    noContentMessage.classList.remove('hidden');
+                } else {
+                    noContentMessage.classList.add('hidden');
+                    currentContentList.forEach(content => {
+                        const row = document.createElement('div');
+                        row.className = 'content-item-row';
+                        row.dataset.contentId = content.id;
+                        row.innerHTML = `
+                            <div class="content-item-details flex-grow">
+                                <h5>${content.title} (${content.type})</h5>
+                                <p>Category: ${content.category || 'N/A'} | Added: ${content.createdDate}</p>
+                            </div>
+                            <div class="content-actions">
+                                <button class="btn btn-sm btn-warning edit-btn" data-content-id="${content.id}">Edit</button>
+                                <button class="btn btn-sm btn-danger delete-btn" data-content-id="${content.id}">Delete</button>
+                            </div>
+                        `;
+                        contentListContainer.appendChild(row);
+                    });
+                    attachEventListeners(); // Re-attach listeners after rendering
+                }
+            }
+
+            // --- Attach Event Listeners to Dynamically Added Buttons ---
+            function attachEventListeners() {
+                document.querySelectorAll('.edit-btn').forEach(button => {
+                    button.onclick = (e) => { e.preventDefault(); openEditModal(button.dataset.contentId); };
+                });
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.onclick = (e) => { e.preventDefault(); openDeleteConfirmModal(button.dataset.contentId); };
+                });
+            }
+
+            // --- Open Add/Edit Modal (UC002 NF 4, 5) ---
+            document.querySelector('[data-bs-target="#addContentModal"]').addEventListener('click', function() {
+                // Reset form for "Add New"
+                contentForm.reset();
+                contentIdInput.value = '';
+                editingContentId = null;
+                contentModalLabel.textContent = 'Add New Educational Content';
+                contentFormMessage.classList.add('hidden'); // Hide any previous messages
+            });
+
+            function openEditModal(contentId) {
+                const content = currentContentList.find(c => c.id === contentId);
+                if (content) {
+                    editingContentId = content.id;
+                    contentModalLabel.textContent = 'Edit Educational Content';
+                    contentIdInput.value = content.id;
+                    contentTitleInput.value = content.title;
+                    contentTypeSelect.value = content.type;
+                    contentCategoryInput.value = content.category;
+                    contentDescriptionTextarea.value = content.description;
+                    contentUrlInput.value = content.url;
+                    contentFormMessage.classList.add('hidden'); // Hide any previous messages
+                    addContentModal.show(); // Show modal
+                } else {
+                    showMessage('error', 'Content not found for editing.', globalMessage);
+                }
+            }
+
+            // --- Handle Add/Edit Form Submission (UC002 NF 4, 5) ---
+            contentForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                contentFormMessage.classList.add('hidden'); // Hide any previous error
+
+                const title = contentTitleInput.value.trim();
+                const type = contentTypeSelect.value;
+                const url = contentUrlInput.value.trim();
+
+                // UC002 EF1: Invalid Input
+                if (!title || !type || !url) {
+                    showMessage('error', 'Title, Type, and URL are required fields.', contentFormMessage);
+                    return;
+                }
+
+                // Simulate validation and storage
+                const isSystemError = Math.random() < 0.1; // 10% chance of system error
+
+                if (isSystemError) {
+                    showMessage('error', 'An error occurred while saving content. Please try again.', contentFormMessage); // UC002 EF2
+                    return;
+                }
+
+                if (editingContentId) {
+                    // Update existing content
+                    const index = currentContentList.findIndex(c => c.id === editingContentId);
+                    if (index !== -1) {
+                        currentContentList[index] = {
+                            ...currentContentList[index], // Keep old data not in form
+                            title: title,
+                            type: type,
+                            category: contentCategoryInput.value.trim(),
+                            description: contentDescriptionTextarea.value.trim(),
+                            url: url
+                        };
+                        showMessage('success', 'Content updated successfully!', globalMessage); // UC002 NF 5 (for update)
+                    } else {
+                        showMessage('error', 'Content to update not found.', globalMessage);
+                    }
+                } else {
+                    // Add new content
+                    const newId = 'c' + (currentContentList.length + 1).toString().padStart(2, '0');
+                    const newContent = {
+                        id: newId,
+                        title: title,
+                        type: type,
+                        category: contentCategoryInput.value.trim(),
+                        description: contentDescriptionTextarea.value.trim(),
+                        url: url,
+                        createdDate: new Date().toISOString().split('T')[0]
+                    };
+                    currentContentList.push(newContent);
+                    showMessage('success', 'Content added successfully!', globalMessage); // UC002 NF 4 (for add)
+                }
+
+                addContentModal.hide(); // Close modal
+                renderContentList(); // Re-render list with updated data
+            });
+
+            // --- Open Delete Confirmation Modal (UC002 NF 6) ---
+            function openDeleteConfirmModal(contentId) {
+                const content = currentContentList.find(c => c.id === contentId);
+                if (content) {
+                    editingContentId = content.id; // Store ID for deletion
+                    deleteContentTitleSpan.textContent = content.title;
+                    deleteContentModal.show();
+                } else {
+                    showMessage('error', 'Content not found for deletion.', globalMessage);
+                }
+            }
+
+            // --- Confirm Delete (UC002 NF 6) ---
+            confirmDeleteBtn.addEventListener('click', function() {
+                // Simulate deletion
+                const isSystemError = Math.random() < 0.1; // 10% chance of system error
+
+                if (isSystemError) {
+                    showMessage('error', 'An error occurred while deleting content. Please try again.', globalMessage); // UC002 EF2
+                } else {
+                    currentContentList = currentContentList.filter(content => content.id !== editingContentId);
+                    showMessage('success', 'Content deleted successfully!', globalMessage); // UC002 NF 6 (for delete)
+                }
+                
+                deleteContentModal.hide(); // Close modal
+                editingContentId = null; // Clear editing ID
+                renderContentList(); // Re-render list
+            });
+
+            // --- Helper function to display temporary messages ---
+            function showMessage(type, message, element) {
+                element.classList.remove('success', 'error', 'hidden');
+                element.classList.add(type);
+                element.textContent = message;
+                element.classList.remove('hidden'); // Ensure visible
+                setTimeout(() => { element.classList.add('hidden'); }, 5000); // Hide after 5 seconds
+            }
+
+            // Initial render of the content list
+            renderContentList();
+        });
+    </script>
+</body>
+</html>

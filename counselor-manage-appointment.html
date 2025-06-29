@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Mind Portal - Counselor: Manage Appointments</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom global styles for the app (copied from app.html) */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #adb5bd;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        /* Profile Dropdown Specific Styles for Computer-Based View (copied from app.html) */
+        .profile-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+        .profile-dropdown-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            margin-right: 0.5rem;
+        }
+        .profile-name {
+            color: white;
+            margin-right: 0.5rem;
+        }
+        .dropdown-menu {
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            min-width: 160px;
+        }
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+        .dropdown-item:hover {
+            background-color: #f0f2f5;
+            color: #007bff;
+        }
+
+        /* Manage Appointments specific styles (adapted for counselor view) */
+        .appointment-list-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .appointment-card {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .appointment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .appointment-details h5 {
+            font-size: 1.25rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .appointment-details p {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 3px;
+        }
+        .appointment-actions .btn {
+            margin-left: 10px;
+        }
+        .reschedule-form, .cancel-form, .add-notes-form, .appointment-details-view {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .reschedule-form .appointment-slot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .reschedule-form .slot-card {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            font-size: 0.9rem;
+        }
+        .reschedule-form .slot-card:hover {
+            background-color: #e9ecef;
+        }
+        .reschedule-form .slot-card.selected {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+            font-weight: bold;
+        }
+        .reschedule-form .slot-card.unavailable {
+            background-color: #f2f2f2;
+            color: #aaa;
+            cursor: not-allowed;
+            border-style: dashed;
+        }
+        .message-alert {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            display: none !important;
+        }
+        .message-alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+        .message-alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <header class="shadow-md">
+        <nav class="navbar navbar-dark bg-primary py-3">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" href="counselor-dashboard.html">U-Mind Portal</a>
+                <div class="d-flex justify-content-end align-items-center" id="navbarNav">
+                    <ul class="navbar-nav flex-row align-items-center">
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="images/default.jpg" alt="Profile Picture" class="profile-pic">
+                                <span class="profile-name">Counselor</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="counselor-profile.html">My Profile</a></li>
+                                <li><a class="dropdown-item" href="counselor-dashboard.html">Counselor Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="index.html">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container my-5 flex-grow">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Manage Student Appointments</h2>
+
+        <div id="appointmentListSection" class="p-5 bg-white rounded-lg shadow-lg appointment-list-container">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">Your Assigned Appointments</h3>
+            
+            <div id="noAppointmentsMessage" class="message-alert hidden">
+                You currently have no assigned appointments.
+            </div>
+
+            <div id="appointmentsContainer">
+                <div class="appointment-card" data-appointment-id="apptC001" data-student="Alice Johnson" data-date="2025-07-16" data-time="09:00 AM - 10:00 AM" data-status="Confirmed" data-notes="First session. Student requested help with academic stress.">
+                    <div class="appointment-details">
+                        <h5>Student: Alice Johnson</h5>
+                        <p>Date: 2025-07-16</p>
+                        <p>Time: 09:00 AM - 10:00 AM</p>
+                        <p>Status: Confirmed</p>
+                    </div>
+                    <div class="appointment-actions">
+                        <button class="btn btn-sm btn-info view-details" data-appt-id="apptC001">View Details</button>
+                        <button class="btn btn-sm btn-warning reschedule-btn" data-appt-id="apptC001">Reschedule</button>
+                        <button class="btn btn-sm btn-danger cancel-btn" data-appt-id="apptC001">Cancel</button>
+                        <button class="btn btn-sm btn-secondary add-notes-btn" data-appt-id="apptC001">Add Session Notes</button>
+                    </div>
+                </div>
+                <div class="appointment-card" data-appointment-id="apptC002" data-student="Bob Williams" data-date="2025-07-22" data-time="01:00 PM - 02:00 PM" data-status="Confirmed" data-notes="Follow-up. Discuss progress on anxiety coping strategies.">
+                    <div class="appointment-details">
+                        <h5>Student: Bob Williams</h5>
+                        <p>Date: 2025-07-22</p>
+                        <p>Time: 01:00 PM - 02:00 PM</p>
+                        <p>Status: Confirmed</p>
+                    </div>
+                    <div class="appointment-actions">
+                        <button class="btn btn-sm btn-info view-details" data-appt-id="apptC002">View Details</button>
+                        <button class="btn btn-sm btn-warning reschedule-btn" data-appt-id="apptC002">Reschedule</button>
+                        <button class="btn btn-sm btn-danger cancel-btn" data-appt-id="apptC002">Cancel</button>
+                        <button class="btn btn-sm btn-secondary add-notes-btn" data-appt-id="apptC002">Add Session Notes</button>
+                    </div>
+                </div>
+            </div>
+            <div id="messageContainer" class="message-alert hidden"></div>
+        </div>
+
+        <div id="appointmentDetailsView" class="appointment-details-view hidden">
+            <h4 class="text-xl font-semibold mb-3">Appointment Details</h4>
+            <p><strong>Student:</strong> <span id="viewDetailsStudent"></span></p>
+            <p><strong>Date:</strong> <span id="viewDetailsDate"></span></p>
+            <p><strong>Time:</strong> <span id="viewDetailsTime"></span></p>
+            <p><strong>Status:</strong> <span id="viewDetailsStatus"></span></p>
+            <p><strong>Session Notes:</strong> <span id="viewDetailsNotes"></span></p>
+            <button class="btn btn-primary mt-3" id="backToListFromDetails">Back to List</button>
+        </div>
+
+        <div id="rescheduleForm" class="reschedule-form hidden">
+            <h4 class="text-xl font-semibold mb-3">Reschedule Appointment</h4>
+            <p>Original: <span id="originalAppt"></span></p>
+            <form id="rescheduleApptForm">
+                <div class="mb-3">
+                    <label for="newApptDate" class="form-label">New Date:</label>
+                    <input type="date" class="form-control" id="newApptDate" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Available New Time Slots:</label>
+                    <div id="newTimeSlotGrid" class="appointment-slot-grid">
+                        <div class="slot-card" data-slot="09:00-10:00" data-available="true">9:00 AM - 10:00 AM</div>
+                        <div class="slot-card" data-slot="10:00-11:00" data-available="true">10:00 AM - 11:00 AM</div>
+                        <div class="slot-card unavailable" data-slot="11:00-12:00" data-available="false">11:00 AM - 12:00 PM (Booked)</div>
+                    </div>
+                    <input type="hidden" id="selectedNewTimeSlot" required>
+                </div>
+                <div id="rescheduleMessage" class="message-alert hidden"></div>
+                <button type="submit" class="btn btn-primary">Confirm Reschedule</button>
+                <button type="button" class="btn btn-secondary" id="cancelReschedule">Cancel</button>
+            </form>
+        </div>
+
+        <div id="cancelForm" class="cancel-form hidden">
+            <h4 class="text-xl font-semibold mb-3">Cancel Appointment</h4>
+            <p>You are about to cancel the appointment with student <span id="cancelStudent"></span> on <span id="cancelDate"></span> at <span id="cancelTime"></span>.</p>
+            <form id="cancelApptForm">
+                <div class="mb-3">
+                    <label for="cancelReason" class="form-label">Reason for cancellation (optional):</label>
+                    <textarea class="form-control" id="cancelReason" rows="3"></textarea>
+                </div>
+                <div id="cancelMessage" class="message-alert hidden"></div>
+                <button type="submit" class="btn btn-danger">Confirm Cancellation</button>
+                <button type="button" class="btn btn-secondary" id="denyCancel">Back</button>
+            </form>
+        </div>
+
+        <div id="addNotesForm" class="add-notes-form hidden">
+            <h4 class="text-xl font-semibold mb-3">Add Session Notes</h4>
+            <p>For appointment with student <span id="notesStudent"></span> on <span id="notesDate"></span> at <span id="notesTime"></span>.</p>
+            <form id="addNotesApptForm">
+                <div class="mb-3">
+                    <label for="appointmentNotes" class="form-label">Notes:</label>
+                    <textarea class="form-control" id="appointmentNotes" rows="5" required></textarea>
+                </div>
+                <div id="notesMessage" class="message-alert hidden"></div>
+                <button type="submit" class="btn btn-primary">Save Notes</button>
+                <button type="button" class="btn btn-secondary" id="cancelNotes">Cancel</button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-dark text-white">
+        <div class="container text-center">
+            <p class="mb-1">&copy; 2025 U-Mind Portal. All rights reserved.</p>
+            <p class="mb-0">
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Privacy Policy</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Terms of Service</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Contact Us</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const appointmentListSection = document.getElementById('appointmentListSection');
+            const noAppointmentsMessage = document.getElementById('noAppointmentsMessage');
+            const appointmentsContainer = document.getElementById('appointmentsContainer');
+            const messageContainer = document.getElementById('messageContainer'); // Global message alert
+
+            const appointmentDetailsView = document.getElementById('appointmentDetailsView');
+            const rescheduleForm = document.getElementById('rescheduleForm');
+            const cancelForm = document.getElementById('cancelForm');
+            const addNotesForm = document.getElementById('addNotesForm');
+
+            // --- Elements for Reschedule Form ---
+            const originalApptSpan = document.getElementById('originalAppt');
+            const newApptDateInput = document.getElementById('newApptDate');
+            const newTimeSlotGrid = document.getElementById('newTimeSlotGrid');
+            const selectedNewTimeSlotInput = document.getElementById('selectedNewTimeSlot');
+            const rescheduleMessage = document.getElementById('rescheduleMessage');
+            const rescheduleApptForm = document.getElementById('rescheduleApptForm');
+            const cancelRescheduleBtn = document.getElementById('cancelReschedule');
+
+            // --- Elements for Cancel Form ---
+            const cancelStudentSpan = document.getElementById('cancelStudent'); // Changed from cancelCounselorSpan
+            const cancelDateSpan = document.getElementById('cancelDate');
+            const cancelTimeSpan = document.getElementById('cancelTime');
+            const cancelReasonTextarea = document.getElementById('cancelReason');
+            const cancelMessage = document.getElementById('cancelMessage');
+            const cancelApptForm = document.getElementById('cancelApptForm');
+            const denyCancelBtn = document.getElementById('denyCancel');
+
+            // --- Elements for Add Notes Form ---
+            const notesStudentSpan = document.getElementById('notesStudent'); // Changed from notesCounselorSpan
+            const notesDateSpan = document.getElementById('notesDate');
+            const notesTimeSpan = document.getElementById('notesTime');
+            const appointmentNotesTextarea = document.getElementById('appointmentNotes');
+            const notesMessage = document.getElementById('notesMessage');
+            const addNotesApptForm = document.getElementById('addNotesApptForm');
+            const cancelNotesBtn = document.getElementById('cancelNotes');
+
+            // --- Elements for View Details ---
+            const viewDetailsStudent = document.getElementById('viewDetailsStudent'); // Changed from viewDetailsCounselor
+            const viewDetailsDate = document.getElementById('viewDetailsDate');
+            const viewDetailsTime = document.getElementById('viewDetailsTime');
+            const viewDetailsStatus = document.getElementById('viewDetailsStatus');
+            const viewDetailsNotes = document.getElementById('viewDetailsNotes');
+            const backToListFromDetailsBtn = document.getElementById('backToListFromDetails');
+
+            let currentAppointmentId = null; // Store ID of appointment being managed
+            let selectedNewSlotElement = null; // Track selected slot for reschedule
+
+            // Sample data (adapted for counselor's view: managing student appointments)
+            let sampleAppointments = [
+                { id: 'apptC001', student: 'Alice Johnson', date: '2025-07-16', time: '09:00 AM - 10:00 AM', status: 'Confirmed', notes: 'First session. Student requested help with academic stress.' },
+                { id: 'apptC002', student: 'Bob Williams', date: '2025-07-22', time: '01:00 PM - 02:00 PM', status: 'Confirmed', notes: 'Follow-up. Discuss progress on anxiety coping strategies.' },
+                { id: 'apptC003', student: 'Charlie Green', date: '2025-08-05', time: '11:00 AM - 12:00 PM', status: 'Pending', notes: 'Initial assessment for mild depression.' },
+            ];
+
+            // --- Initial Load & Display Appointments ---
+            function loadAppointments() {
+                appointmentsContainer.innerHTML = ''; // Clear existing
+                if (sampleAppointments.length === 0) {
+                    noAppointmentsMessage.classList.remove('hidden');
+                } else {
+                    noAppointmentsMessage.classList.add('hidden');
+                    sampleAppointments.forEach(appt => {
+                        const apptCard = document.createElement('div');
+                        apptCard.className = 'appointment-card';
+                        apptCard.dataset.appointmentId = appt.id;
+                        apptCard.dataset.student = appt.student; // Use student name
+                        apptCard.dataset.date = appt.date;
+                        apptCard.dataset.time = appt.time;
+                        apptCard.dataset.status = appt.status;
+                        apptCard.dataset.notes = appt.notes;
+
+                        apptCard.innerHTML = `
+                            <div class="appointment-details">
+                                <h5>Student: ${appt.student}</h5>
+                                <p>Date: ${appt.date}</p>
+                                <p>Time: ${appt.time}</p>
+                                <p>Status: ${appt.status}</p>
+                            </div>
+                            <div class="appointment-actions">
+                                <button class="btn btn-sm btn-info view-details" data-appt-id="${appt.id}">View Details</button>
+                                <button class="btn btn-sm btn-warning reschedule-btn" data-appt-id="${appt.id}">Reschedule</button>
+                                <button class="btn btn-sm btn-danger cancel-btn" data-appt-id="${appt.id}">Cancel</button>
+                                <button class="btn btn-sm btn-secondary add-notes-btn" data-appt-id="${appt.id}">Add Session Notes</button>
+                            </div>
+                        `;
+                        appointmentsContainer.appendChild(apptCard);
+                    });
+                }
+                attachAppointmentCardListeners(); // Attach listeners after loading
+            }
+
+            loadAppointments(); // Load appointments on page load
+
+            // --- Event Listeners for Appointment Actions ---
+            function attachAppointmentCardListeners() {
+                document.querySelectorAll('.view-details').forEach(button => {
+                    button.onclick = (e) => { e.preventDefault(); showViewDetails(button.dataset.apptId); };
+                });
+                document.querySelectorAll('.reschedule-btn').forEach(button => {
+                    button.onclick = (e) => { e.preventDefault(); showRescheduleForm(button.dataset.apptId); };
+                });
+                document.querySelectorAll('.cancel-btn').forEach(button => {
+                    button.onclick = (e) => { e.preventDefault(); showCancelForm(button.dataset.apptId); };
+                });
+                document.querySelectorAll('.add-notes-btn').forEach(button => {
+                    button.onclick = (e) => { e.preventDefault(); showAddNotesForm(button.dataset.apptId); };
+                });
+            }
+
+            // --- Show/Hide Sections Helper ---
+            function hideAllForms() {
+                appointmentListSection.classList.add('hidden');
+                appointmentDetailsView.classList.add('hidden');
+                rescheduleForm.classList.add('hidden');
+                cancelForm.classList.add('hidden');
+                addNotesForm.classList.add('hidden');
+                messageContainer.classList.add('hidden'); // Hide global message
+                messageContainer.textContent = ''; // Clear global message text
+            }
+
+            function showAppointmentList() {
+                hideAllForms();
+                appointmentListSection.classList.remove('hidden');
+                loadAppointments(); // Reload to reflect potential changes
+            }
+
+            // --- View Details (UC005 NF 4) ---
+            function showViewDetails(apptId) {
+                hideAllForms();
+                const appt = sampleAppointments.find(a => a.id === apptId);
+                if (appt) {
+                    viewDetailsStudent.textContent = appt.student; // Display student name
+                    viewDetailsDate.textContent = appt.date;
+                    viewDetailsTime.textContent = appt.time;
+                    viewDetailsStatus.textContent = appt.status;
+                    viewDetailsNotes.textContent = appt.notes || 'No notes added.';
+                    appointmentDetailsView.classList.remove('hidden');
+                } else {
+                    showMessage('error', 'Appointment details not found.', messageContainer);
+                    showAppointmentList();
+                }
+            }
+            backToListFromDetailsBtn.addEventListener('click', showAppointmentList);
+
+            // --- Reschedule Form (UC005 AF1) ---
+            function showRescheduleForm(apptId) {
+                hideAllForms();
+                currentAppointmentId = apptId;
+                const appt = sampleAppointments.find(a => a.id === apptId);
+                if (appt) {
+                    originalApptSpan.textContent = `Student: ${appt.student} on ${appt.date} at ${appt.time}`;
+                    const today = new Date();
+                    const nextDay = new Date(today);
+                    nextDay.setDate(today.getDate() + 1);
+                    newApptDateInput.min = nextDay.toISOString().split('T')[0];
+
+                    // Reset selected slot
+                    if (selectedNewSlotElement) {
+                        selectedNewSlotElement.classList.remove('selected');
+                        selectedNewSlotElement = null;
+                    }
+                    selectedNewTimeSlotInput.value = '';
+                    rescheduleMessage.classList.add('hidden'); // Hide any previous messages
+
+                    rescheduleForm.classList.remove('hidden');
+                } else {
+                    showMessage('error', 'Appointment not found for rescheduling.', messageContainer);
+                    showAppointmentList();
+                }
+            }
+
+            newTimeSlotGrid.addEventListener('click', function(event) {
+                let target = event.target;
+                while (target && !target.classList.contains('slot-card')) {
+                    target = target.parentElement;
+                }
+                if (target && target.classList.contains('slot-card')) {
+                    if (target.classList.contains('unavailable')) {
+                        showMessage('error', 'This slot is unavailable. Please choose another.', rescheduleMessage);
+                        return;
+                    }
+                    if (selectedNewSlotElement) {
+                        selectedNewSlotElement.classList.remove('selected');
+                    }
+                    selectedNewSlotElement = target;
+                    selectedNewSlotElement.classList.add('selected');
+                    selectedNewTimeSlotInput.value = selectedNewSlotElement.dataset.slot;
+                    rescheduleMessage.classList.add('hidden'); // Hide any error messages
+                }
+            });
+
+            rescheduleApptForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                if (!selectedNewTimeSlotInput.value || !newApptDateInput.value) {
+                    showMessage('error', 'Please select a new date and time slot.', rescheduleMessage);
+                    return;
+                }
+
+                // Simulate validation and update (UC005 NF 6)
+                const isConflict = Math.random() > 0.85; // 15% chance of conflict (EF1)
+                const isNetworkError = Math.random() > 0.95; // 5% chance of network error (EF2)
+
+                if (isNetworkError) {
+                    showMessage('error', 'Network/system error during reschedule. Please try again.', messageContainer);
+                } else if (isConflict) {
+                    showMessage('error', `Time slot conflict detected for ${newApptDateInput.value} at ${selectedNewTimeSlotInput.value}. Please choose another.`, rescheduleMessage);
+                    // Mark the slot as unavailable visually for feedback
+                    if (selectedNewSlotElement) {
+                        selectedNewSlotElement.classList.remove('selected');
+                        selectedNewSlotElement.classList.add('unavailable');
+                    }
+                } else {
+                    // Update sample data (conceptual)
+                    const apptIndex = sampleAppointments.findIndex(a => a.id === currentAppointmentId);
+                    if (apptIndex !== -1) {
+                        sampleAppointments[apptIndex].date = newApptDateInput.value;
+                        sampleAppointments[apptIndex].time = selectedNewTimeSlotInput.value;
+                        sampleAppointments[apptIndex].status = 'Rescheduled'; // Update status
+                    }
+                    showMessage('success', 'Appointment successfully rescheduled!', messageContainer);
+                    showAppointmentList(); // Go back to list
+                }
+            });
+            cancelRescheduleBtn.addEventListener('click', showAppointmentList);
+
+            // --- Cancel Form (UC005 AF2) ---
+            function showCancelForm(apptId) {
+                hideAllForms();
+                currentAppointmentId = apptId;
+                const appt = sampleAppointments.find(a => a.id === apptId);
+                if (appt) {
+                    cancelStudentSpan.textContent = appt.student; // Display student name
+                    cancelDateSpan.textContent = appt.date;
+                    cancelTimeSpan.textContent = appt.time;
+                    cancelReasonTextarea.value = ''; // Clear previous reason
+                    cancelMessage.classList.add('hidden'); // Hide any previous messages
+                    cancelForm.classList.remove('hidden');
+                } else {
+                    showMessage('error', 'Appointment not found for cancellation.', messageContainer);
+                    showAppointmentList();
+                }
+            }
+
+            cancelApptForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                // Simulate update (UC005 NF 6)
+                const isNetworkError = Math.random() > 0.9; // 10% chance of network error (EF2)
+
+                if (isNetworkError) {
+                    showMessage('error', 'Network/system error during cancellation. Please try again.', messageContainer);
+                } else {
+                    // Remove from sample data (conceptual)
+                    const initialLength = sampleAppointments.length;
+                    sampleAppointments = sampleAppointments.filter(appt => appt.id !== currentAppointmentId);
+                    if (sampleAppointments.length < initialLength) {
+                        showMessage('success', 'Appointment successfully canceled!', messageContainer);
+                    } else {
+                         // Fallback, shouldn't happen if filter works
+                        showMessage('error', 'Failed to cancel appointment. Appointment not found in list.', messageContainer);
+                    }
+                    showAppointmentList(); // Go back to list
+                }
+            });
+            denyCancelBtn.addEventListener('click', showAppointmentList);
+
+            // --- Add Notes Form (UC005 AF3) ---
+            function showAddNotesForm(apptId) {
+                hideAllForms();
+                currentAppointmentId = apptId;
+                const appt = sampleAppointments.find(a => a.id === apptId);
+                if (appt) {
+                    notesStudentSpan.textContent = appt.student; // Display student name
+                    notesDateSpan.textContent = appt.date;
+                    notesTimeSpan.textContent = appt.time;
+                    appointmentNotesTextarea.value = appt.notes || ''; // Pre-fill with existing notes
+                    notesMessage.classList.add('hidden'); // Hide any previous messages
+                    addNotesForm.classList.remove('hidden');
+                } else {
+                    showMessage('error', 'Appointment not found for adding notes.', messageContainer);
+                    showAppointmentList();
+                }
+            }
+
+            addNotesApptForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                if (!appointmentNotesTextarea.value.trim()) { // Ensure notes are not just whitespace
+                    showMessage('error', 'Notes cannot be empty.', notesMessage);
+                    return;
+                }
+
+                // Simulate update (UC005 NF 6)
+                const isNetworkError = Math.random() > 0.9; // 10% chance of network error (EF2)
+
+                if (isNetworkError) {
+                    showMessage('error', 'Network/system error during saving notes. Please try again.', messageContainer);
+                } else {
+                    const apptIndex = sampleAppointments.findIndex(a => a.id === currentAppointmentId);
+                    if (apptIndex !== -1) {
+                        sampleAppointments[apptIndex].notes = appointmentNotesTextarea.value.trim();
+                        showMessage('success', 'Notes successfully saved!', messageContainer);
+                    } else {
+                        showMessage('error', 'Failed to save notes. Appointment not found.', messageContainer);
+                    }
+                    showAppointmentList(); // Go back to list
+                }
+            });
+            cancelNotesBtn.addEventListener('click', showAppointmentList);
+
+
+            // Helper function to display temporary messages
+            function showMessage(type, message, element) {
+                element.classList.remove('success', 'error', 'hidden'); // Remove previous types and ensure visible
+                element.classList.add(type);
+                element.textContent = message;
+                // For messages within forms, they stay until explicitly hidden or form is switched
+                // For global messageContainer, you might want a setTimeout:
+                if (element.id === 'messageContainer') {
+                     setTimeout(() => { element.classList.add('hidden'); }, 5000); // Hide after 5 seconds
+                }
+            }
+        });
+    </script>
+</body>
+</html>

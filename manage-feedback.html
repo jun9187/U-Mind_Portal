@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Mind Portal - Manage Feedback</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom global styles for the app (copied from app.html) */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #adb5bd;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        /* Profile Dropdown Specific Styles for Computer-Based View (copied from app.html) */
+        .profile-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+        .profile-dropdown-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            margin-right: 0.5rem;
+        }
+        .profile-name {
+            color: white;
+            margin-right: 0.5rem;
+        }
+        .dropdown-menu {
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            min-width: 160px;
+        }
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+        .dropdown-item:hover {
+            background-color: #f0f2f5;
+            color: #007bff;
+        }
+
+        /* Feedback Management specific styles */
+        .feedback-management-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .feedback-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            background-color: #fcfcfc;
+        }
+        .feedback-item-row:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+        .feedback-item-row:hover {
+            background-color: #f0f2f5;
+        }
+        .feedback-details-summary h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .feedback-details-summary p {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0;
+        }
+        .feedback-status-badge {
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .feedback-status-badge.new { background-color: #ffc107; color: #333; } /* Warning yellow */
+        .feedback-status-badge.reviewed { background-color: #0dcaf0; color: white; } /* Info blue */
+        .feedback-status-badge.resolved { background-color: #28a745; color: white; } /* Success green */
+
+        .feedback-actions .btn {
+            margin-left: 10px;
+        }
+
+        /* Feedback detail view/response form */
+        .feedback-detail-view {
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .feedback-detail-view h3 {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .feedback-detail-view p strong {
+            color: #555;
+            margin-right: 5px;
+        }
+        .feedback-detail-view textarea {
+            min-height: 120px;
+        }
+
+        .message-alert {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            display: none !important;
+        }
+        .message-alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+        .message-alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <header class="shadow-md">
+        <nav class="navbar navbar-dark bg-primary py-3">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" href="customer-service-dashboard.html">U-Mind Portal</a>
+                <div class="d-flex justify-content-end align-items-center" id="navbarNav">
+                    <ul class="navbar-nav flex-row align-items-center">
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="images/default.jpg" alt="Profile Picture" class="profile-pic">
+                                <span class="profile-name">CS Agent</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="customer-service-dashboard.html">CS Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="index.html">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container my-5 flex-grow">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Manage User Feedback</h2>
+
+        <div id="feedbackListSection" class="p-5 bg-white rounded-lg shadow-lg feedback-management-container">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">Submitted Feedback</h3>
+            
+            <div id="noFeedbackMessage" class="message-alert hidden">
+                No new feedback available.
+            </div>
+
+            <div id="feedbackContainer">
+                </div>
+
+            <div id="globalMessage" class="message-alert hidden mt-4"></div>
+        </div>
+
+        <div id="feedbackDetailView" class="feedback-detail-view hidden">
+            <button class="btn btn-secondary btn-sm mb-4" id="backToFeedbackListBtn">← Back to Feedback List</button>
+
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Feedback Details</h3>
+            
+            <div class="mb-4">
+                <p><strong>Feedback ID:</strong> <span id="detailFeedbackId"></span></p>
+                <p><strong>Submitted By (User ID):</strong> <span id="detailSubmittedBy"></span></p>
+                <p><strong>Submitted On:</strong> <span id="detailSubmittedDate"></span></p>
+                <p><strong>Rating:</strong> <span id="detailRating"></span> <span class="text-warning">&#9733;</span></p>
+            </div>
+            
+            <div class="mb-4">
+                <p><strong>Comments:</strong></p>
+                <p class="border p-3 rounded bg-gray-50" id="detailComments"></p>
+            </div>
+
+            <div class="mb-4">
+                <p><strong>Current Status:</strong> <span id="detailStatus" class="feedback-status-badge"></span></p>
+            </div>
+
+            <form id="feedbackResponseForm">
+                <div class="mb-3">
+                    <label for="internalNotes" class="form-label">Internal Notes (for CS team only):</label>
+                    <textarea class="form-control" id="internalNotes" rows="4" placeholder="Add notes about this feedback, e.g., actions taken, investigation results."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="responseMessage" class="form-label">Response to User (optional):</label>
+                    <textarea class="form-control" id="responseMessage" rows="4" placeholder="Type your message to the user, if applicable."></textarea>
+                </div>
+
+                <div id="detailFormMessage" class="message-alert hidden"></div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="button" class="btn btn-info" id="markAsReviewedBtn">Mark as Reviewed (Demo)</button>
+                    <button type="submit" class="btn btn-success" id="markAsResolvedBtn">Mark as Resolved & Send (Demo)</button>
+                    <button type="button" class="btn btn-secondary" id="cancelDetailViewBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-dark text-white">
+        <div class="container text-center">
+            <p class="mb-1">&copy; 2025 U-Mind Portal. All rights reserved.</p>
+            <p class="mb-0">
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Privacy Policy</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Terms of Service</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Contact Us</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // UI elements for list view
+            const feedbackListSection = document.getElementById('feedbackListSection');
+            const noFeedbackMessage = document.getElementById('noFeedbackMessage');
+            const feedbackContainer = document.getElementById('feedbackContainer');
+            const globalMessage = document.getElementById('globalMessage');
+
+            // UI elements for detail view
+            const feedbackDetailView = document.getElementById('feedbackDetailView');
+            const backToFeedbackListBtn = document.getElementById('backToFeedbackListBtn');
+            const detailFeedbackId = document.getElementById('detailFeedbackId');
+            const detailSubmittedBy = document.getElementById('detailSubmittedBy');
+            const detailSubmittedDate = document.getElementById('detailSubmittedDate');
+            const detailRating = document.getElementById('detailRating');
+            const detailComments = document.getElementById('detailComments');
+            const detailStatus = document.getElementById('detailStatus');
+            const internalNotesTextarea = document.getElementById('internalNotes');
+            const responseMessageTextarea = document.getElementById('responseMessage');
+            const detailFormMessage = document.getElementById('detailFormMessage');
+            const markAsReviewedBtn = document.getElementById('markAsReviewedBtn');
+            const markAsResolvedBtn = document.getElementById('markAsResolvedBtn');
+            const cancelDetailViewBtn = document.getElementById('cancelDetailViewBtn');
+            const feedbackResponseForm = document.getElementById('feedbackResponseForm'); // The form containing the response buttons
+
+            let currentFeedbackList = [
+                { id: 'f001', userId: 'student_1', rating: 4, comments: 'Overall good, but search function in educational content could be better.', date: '2025-07-25 10:30 AM', status: 'New', internalNotes: '', response: '' },
+                { id: 'f002', userId: 'student_2', rating: 5, comments: 'Love the new virtual assistant! Very helpful.', date: '2025-07-24 11:15 AM', status: 'New', internalNotes: '', response: '' },
+                { id: 'f003', userId: 'student_3', rating: 3, comments: 'Peer forum sometimes slow to load.', date: '2025-07-23 09:00 AM', status: 'Reviewed', internalNotes: 'Checked backend logs; found minor delay on database query for large forums.', response: 'Thank you for your feedback. We are looking into optimizing the peer forum loading times.' },
+                { id: 'f004', userId: 'student_4', rating: 5, comments: 'Great resource for mental health, thank you!', date: '2025-07-22 03:45 PM', status: 'Resolved', internalNotes: 'Generic positive feedback. No action required.', response: 'Thank you for your positive feedback! We are glad you find the portal helpful.' },
+            ];
+            let editingFeedbackId = null;
+
+            // --- Render Feedback List ---
+            function renderFeedbackList() {
+                feedbackContainer.innerHTML = '';
+                if (currentFeedbackList.length === 0) {
+                    noFeedbackMessage.classList.remove('hidden');
+                } else {
+                    noFeedbackMessage.classList.add('hidden');
+                    currentFeedbackList.forEach(feedback => {
+                        const row = document.createElement('div');
+                        row.className = 'content-item-row feedback-item-row';
+                        row.dataset.feedbackId = feedback.id;
+                        row.innerHTML = `
+                            <div class="feedback-details-summary flex-grow">
+                                <h5>Feedback ID: ${feedback.id} - Rating: ${feedback.rating}&#9733;</h5>
+                                <p>${feedback.comments.substring(0, 70)}${feedback.comments.length > 70 ? '...' : ''}</p>
+                                <p class="text-xs text-gray-500">Submitted by: ${feedback.userId} on ${feedback.date}</p>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="feedback-status-badge ${feedback.status.toLowerCase()}">${feedback.status}</span>
+                                <button class="btn btn-sm btn-primary view-feedback-btn ms-3" data-feedback-id="${feedback.id}">View/Manage</button>
+                            </div>
+                        `;
+                        feedbackContainer.appendChild(row);
+                    });
+                    attachViewButtonListeners(); // Attach listener to view buttons
+                }
+                // Show list section, hide detail section
+                feedbackListSection.classList.remove('hidden');
+                feedbackDetailView.classList.add('hidden');
+                globalMessage.classList.add('hidden'); // Ensure global message is hidden on list view
+            }
+
+            // --- Attach Event Listeners for 'View/Manage' buttons in list ---
+            function attachViewButtonListeners() {
+                document.querySelectorAll('.view-feedback-btn').forEach(button => {
+                    button.onclick = (e) => {
+                        e.preventDefault();
+                        const feedbackId = button.dataset.feedbackId;
+                        // Simply reload page with ID to simulate viewing detail
+                        window.location.href = `manage-feedback.html?id=${feedbackId}`;
+                    };
+                });
+            }
+
+            // --- Initialize View based on URL (for deep linking/reloading to detail) ---
+            function initializeView() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const feedbackIdFromUrl = urlParams.get('id');
+
+                if (feedbackIdFromUrl) {
+                    const feedback = currentFeedbackList.find(f => f.id === feedbackIdFromUrl);
+                    if (feedback) {
+                        openFeedbackDetailView(feedbackIdFromUrl);
+                    } else {
+                        // If ID in URL is invalid, show list and a message
+                        showMessage('error', 'Feedback not found.', globalMessage);
+                        renderFeedbackList();
+                    }
+                } else {
+                    // No ID in URL, show the list view
+                    renderFeedbackList();
+                }
+            }
+            
+            initializeView(); // Call this on DOMContentLoaded
+
+
+            // --- Function to open Feedback Detail View ---
+            function openFeedbackDetailView(feedbackId) {
+                const feedback = currentFeedbackList.find(f => f.id === feedbackId);
+                if (feedback) {
+                    editingFeedbackId = feedback.id;
+
+                    // Populate details
+                    detailFeedbackId.textContent = feedback.id;
+                    detailSubmittedBy.textContent = feedback.userId;
+                    detailSubmittedDate.textContent = feedback.date;
+                    detailRating.textContent = feedback.rating;
+                    detailComments.textContent = feedback.comments;
+                    detailStatus.textContent = feedback.status;
+                    detailStatus.className = `feedback-status-badge ${feedback.status.toLowerCase()}`;
+                    internalNotesTextarea.value = feedback.internalNotes || '';
+                    responseMessageTextarea.value = feedback.response || '';
+
+                    // Adjust UI based on status for demo
+                    internalNotesTextarea.readOnly = false;
+                    responseMessageTextarea.readOnly = false;
+                    markAsReviewedBtn.classList.remove('hidden');
+                    markAsResolvedBtn.classList.remove('hidden');
+
+                    if (feedback.status === 'Resolved') {
+                        markAsReviewedBtn.classList.add('hidden');
+                        markAsResolvedBtn.classList.add('hidden');
+                        internalNotesTextarea.readOnly = true;
+                        responseMessageTextarea.readOnly = true;
+                    } else if (feedback.status === 'Reviewed') {
+                        markAsReviewedBtn.classList.add('hidden');
+                    }
+                    
+                    // Show detail section, hide list
+                    feedbackListSection.classList.add('hidden');
+                    feedbackDetailView.classList.remove('hidden');
+                } else {
+                    // Should ideally not happen if called with a valid ID
+                    showMessage('error', 'Feedback details could not be loaded.', globalMessage);
+                    renderFeedbackList();
+                }
+            }
+
+            // --- Event listeners for detail view buttons (Reloading for simplicity) ---
+
+            // Back to Feedback List button (Simplified)
+            backToFeedbackListBtn.addEventListener('click', function() {
+                window.location.href = 'manage-feedback.html'; // Reloads the page to list view
+            });
+
+            // Mark as Reviewed button (Simplified Demo)
+            markAsReviewedBtn.addEventListener('click', function() {
+                alert('Feedback marked as Reviewed (Demo purpose). Page will reload.');
+                window.location.href = 'manage-feedback.html'; // Reloads the page
+            });
+
+            // Mark as Resolved & Send Response button (Simplified Demo)
+            feedbackResponseForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
+                alert('Feedback marked as Resolved & Response sent (Demo purpose). Page will reload.');
+                window.location.href = 'manage-feedback.html'; // Reloads the page
+            });
+
+            // Cancel button in detail view (Simplified)
+            cancelDetailViewBtn.addEventListener('click', function() {
+                window.location.href = 'manage-feedback.html'; // Reloads the page to list view
+            });
+
+
+            // --- Helper function to display temporary messages ---
+            function showMessage(type, message, element) {
+                element.classList.remove('success', 'error', 'hidden');
+                element.classList.add(type);
+                element.textContent = message;
+                element.classList.remove('hidden'); // Ensure visible
+                setTimeout(() => { element.classList.add('hidden'); }, 5000); // Hide after 5 seconds
+            }
+        });
+    </script>
+</body>
+</html>
