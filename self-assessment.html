@@ -115,7 +115,8 @@
             padding: 30px;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            display: none; /* Hidden by default */
+            /* Ensure it has a display type when hidden is removed */
+            /* Removed display: none; from here to explicitly toggle with JS */
         }
         .results-container h3 {
             color: #28a745; /* Green for success */
@@ -153,6 +154,10 @@
             text-align: center;
             display: none; /* Hidden by default */
         }
+        /* Tailwind's 'hidden' class needs to be active initially to hide the results */
+        .hidden {
+            display: none !important; /* Ensure Tailwind's hidden overrides other styles */
+        }
     </style>
 </head>
 <body>
@@ -171,7 +176,7 @@
                                 <li><a class="dropdown-item" href="profile.html">My Profile</a></li>
                                 <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="index.html">Logout</a></li>
+                                <li><a class="dropdown-item text-danger" href="login.html">Logout</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -257,8 +262,7 @@
             </form>
         </div>
 
-        <div id="resultsSection" class="results-container hidden">
-            <h3>Assessment Results</h3>
+        <div id="resultsSection" class="results-container hidden"> <h3>Assessment Results</h3>
             <p id="resultText"></p>
             <div id="recommendations" class="recommendations">
                 <h4>Recommended Actions:</h4>
@@ -324,31 +328,31 @@
                 if (totalScore <= 3) {
                     interpretation = "Your responses suggest you are experiencing minimal to no symptoms of anxiety or depression. Keep up with positive coping strategies!";
                     recommendations = [
-                        "Explore general mental wellness articles.",
+                        "Explore general mental wellness articles from the Mental Health Resources module.",
                         "Practice daily mindfulness exercises.",
                         "Maintain a healthy lifestyle with regular exercise and balanced diet."
                     ];
                 } else if (totalScore <= 6) {
                     interpretation = "You may be experiencing mild symptoms. It's good you're checking in with yourself.";
                     recommendations = [
-                        "Read articles on stress management techniques.",
+                        "Read articles on stress management techniques from the Mental Health Resources module.",
                         "Try guided meditations available in the portal.",
-                        "Consider using mood tracking tools.",
+                        "Consider using mood tracking tools in your profile.",
                         "If symptoms persist, consider booking a counseling appointment."
                     ];
                 } else if (totalScore <= 9) {
                     interpretation = "Your responses indicate moderate symptoms. It might be helpful to seek some support.";
                     recommendations = [
-                        "Explore specific coping strategies for anxiety and depression.",
-                        "Reach out to the virtual assistant for immediate support.",
-                        "Strongly consider booking a counseling appointment with a professional.",
-                        "Engage with the peer support forum."
+                        "Explore specific coping strategies for anxiety and depression in the Mental Health Resources module.",
+                        "Reach out to the virtual assistant for immediate support via the Support module.",
+                        "Strongly consider booking a counseling appointment with a professional using the Counseling Appointment module.",
+                        "Engage with the peer support forum in the Community module."
                     ];
                 } else {
                     interpretation = "You appear to be experiencing severe symptoms. It's important to seek professional help as soon as possible.";
                     recommendations = [
                         "Immediately use the 'Receive Crisis Support' feature in the Support module.",
-                        "Book an urgent counseling appointment.",
+                        "Book an urgent counseling appointment via the Counseling Appointment module.",
                         "Reach out to a trusted friend, family member, or university support service.",
                         "Prioritize self-care and reduce academic/workload stress if possible."
                     ];

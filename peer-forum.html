@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Mind Portal - Peer Forum</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom global styles for the app (copied from app.html) */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #adb5bd;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        /* Profile Dropdown Specific Styles for Computer-Based View (copied from app.html) */
+        .profile-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+        .profile-dropdown-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            margin-right: 0.5rem;
+        }
+        .profile-name {
+            color: white;
+            margin-right: 0.5rem;
+        }
+        .dropdown-menu {
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            min-width: 160px;
+        }
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+        .dropdown-item:hover {
+            background-color: #f0f2f5;
+            color: #007bff;
+        }
+
+        /* Peer Forum specific styles */
+        .forum-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .forum-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .forum-search-bar {
+            flex-grow: 1;
+            margin-right: 15px;
+        }
+        .forum-card-link { /* New class for the clickable link */
+            text-decoration: none; /* Remove underline */
+            color: inherit; /* Inherit text color */
+            display: block; /* Make the whole card clickable */
+        }
+        .forum-card {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+        .forum-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .forum-card h5 {
+            font-size: 1.25rem;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        .forum-card p {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .forum-card .meta {
+            font-size: 0.85rem;
+            color: #999;
+        }
+        .forum-post-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .forum-post-details h4 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .forum-post-meta {
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .forum-comments .comment-item {
+            background-color: #f0f2f5;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #e0e0e0;
+        }
+        .forum-comments .comment-author {
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        .forum-comments .comment-text {
+            font-size: 1rem;
+            color: #333;
+        }
+        .forum-comments .comment-timestamp {
+            font-size: 0.8rem;
+            color: #aaa;
+            text-align: right;
+        }
+        .message-alert {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .message-alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+        .message-alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+        /* Crucial fix: Ensure Tailwind's 'hidden' class overrides other display properties */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <header class="shadow-md">
+        <nav class="navbar navbar-dark bg-primary py-3">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" href="dashboard.html">U-Mind Portal</a>
+                <div class="d-flex justify-content-end align-items-center" id="navbarNav">
+                    <ul class="navbar-nav flex-row align-items-center">
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="images/default.jpg" alt="Profile Picture" class="profile-pic">
+                                <span class="profile-name">Student Name</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="profile.html">My Profile</a></li>
+                                <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="index.html">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container my-5 flex-grow">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Peer Discussion Forum</h2>
+
+        <div id="forumListSection" class="p-5 bg-white rounded-lg shadow-lg forum-container">
+            <div class="forum-header">
+                <div class="forum-search-bar">
+                    <input type="text" id="forumSearchBar" class="form-control" placeholder="Search forum discussions...">
+                </div>
+                <button class="btn btn-primary" id="createNewForumBtn">Create New Forum</button>
+            </div>
+
+            <div id="noForumsMessage" class="message-alert hidden">
+                No forum discussions found.
+            </div>
+
+            <div id="forumsContainer">
+                <a href="#" class="forum-card-link" data-forum-id="forum001">
+                    <div class="forum-card">
+                        <h5>Anxiety Management Techniques</h5>
+                        <p>Discuss effective strategies for managing anxiety in daily life and academic settings.</p>
+                        <div class="meta">Started by: John Doe | Last activity: 2 days ago | 15 replies</div>
+                    </div>
+                </a>
+                <a href="#" class="forum-card-link" data-forum-id="forum002">
+                    <div class="forum-card">
+                        <h5>Coping with Academic Stress</h5>
+                        <p>Share experiences and tips on handling stress related to university studies and exams.</p>
+                        <div class="meta">Started by: Jane Smith | Last activity: 1 day ago | 8 replies</div>
+                    </div>
+                </a>
+                <a href="#" class="forum-card-link" data-forum-id="forum003">
+                    <div class="forum-card">
+                        <h5>Mindfulness Practices for Students</h5>
+                        <p>Explore different mindfulness exercises and their benefits for mental well-being.</p>
+                        <div class="meta">Started by: Admin | Last activity: 5 hours ago | 22 replies</div>
+                    </div>
+                </a>
+            </div>
+            <div id="listMessageContainer" class="message-alert hidden"></div>
+        </div>
+
+        <div id="forumPostSection" class="p-5 bg-white rounded-lg shadow-lg forum-post-container hidden">
+            <button class="btn btn-secondary btn-sm mb-4" id="backToForumsBtn">← Back to Forums List</button>
+            <h3 id="postTitle" class="text-2xl font-bold text-gray-800 mb-2"></h3>
+            <div class="forum-post-meta">
+                Started by: <span id="postAuthor"></span> | <span id="postTimestamp"></span>
+            </div>
+            <p id="postContent" class="text-gray-700 mb-5"></p>
+
+            <h4 class="text-xl font-semibold text-gray-800 mb-4">Comments</h4>
+            <div id="commentsContainer" class="forum-comments">
+                </div>
+
+            <div class="mt-5">
+                <h4 class="text-xl font-semibold text-gray-800 mb-3">Post a Comment</h4>
+                <form id="postCommentForm">
+                    <div class="mb-3">
+                        <textarea class="form-control" id="commentText" rows="4" placeholder="Share your thoughts or ask a question..." required></textarea>
+                    </div>
+                    <div id="commentMessage" class="message-alert hidden"></div>
+                    <button type="submit" class="btn btn-primary">Submit Comment</button>
+                    <button type="button" class="btn btn-secondary ms-2" id="cancelCommentBtn">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="createNewForumSection" class="p-5 bg-white rounded-lg shadow-lg forum-post-container hidden">
+            <button class="btn btn-secondary btn-sm mb-4" id="backToForumsFromCreateBtn">← Back to Forums List</button>
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Create New Discussion Forum</h3>
+            <p class="text-gray-700 mb-6">Fill in the details to start a new discussion. Your forum will be reviewed before being made public.</p>
+
+            <form id="createForumForm">
+                <div class="mb-3">
+                    <label for="forumTitle" class="form-label">Forum Title:</label>
+                    <input type="text" class="form-control" id="forumTitle" required>
+                </div>
+                <div class="mb-3">
+                    <label for="forumDescription" class="form-label">Description:</label>
+                    <textarea class="form-control" id="forumDescription" rows="5" required></textarea>
+                </div>
+                <div id="createForumMessage" class="message-alert hidden"></div>
+                <button type="submit" class="btn btn-primary">Submit for Review</button>
+                <button type="button" class="btn btn-secondary ms-2" id="cancelCreateForumBtn">Cancel</button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-dark text-white">
+        <div class="container text-center">
+            <p class="mb-1">&copy; 2025 U-Mind Portal. All rights reserved.</p>
+            <p class="mb-0">
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Privacy Policy</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Terms of Service</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Contact Us</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const forumListSection = document.getElementById('forumListSection');
+            const forumPostSection = document.getElementById('forumPostSection');
+            const createNewForumSection = document.getElementById('createNewForumSection');
+            const forumSearchBar = document.getElementById('forumSearchBar');
+            const createNewForumBtn = document.getElementById('createNewForumBtn');
+            const noForumsMessage = document.getElementById('noForumsMessage');
+            const forumsContainer = document.getElementById('forumsContainer');
+            const listMessageContainer = document.getElementById('listMessageContainer');
+
+            // Elements for forum post view
+            const backToForumsBtn = document.getElementById('backToForumsBtn');
+            const postTitle = document.getElementById('postTitle');
+            const postAuthor = document.getElementById('postAuthor');
+            const postTimestamp = document.getElementById('postTimestamp');
+            const postContent = document.getElementById('postContent');
+            const commentsContainer = document.getElementById('commentsContainer');
+            const postCommentForm = document.getElementById('postCommentForm');
+            const commentText = document.getElementById('commentText');
+            const commentMessage = document.getElementById('commentMessage');
+            const cancelCommentBtn = document.getElementById('cancelCommentBtn');
+
+            // Elements for create new forum
+            const backToForumsFromCreateBtn = document.getElementById('backToForumsFromCreateBtn');
+            const createForumForm = document.getElementById('createForumForm');
+            const forumTitleInput = document.getElementById('forumTitle');
+            const forumDescriptionTextarea = document.getElementById('forumDescription');
+            const createForumMessage = document.getElementById('createForumMessage');
+            const cancelCreateForumBtn = document.getElementById('cancelCreateForumBtn');
+
+            let currentForumId = null; // Variable to hold the ID of the currently viewed forum
+
+            // Sample data (replace with actual data fetching/API calls)
+            let sampleForums = [
+                { id: 'forum001', title: 'Anxiety Management Techniques', description: 'Discuss effective strategies for managing anxiety in daily life and academic settings.', author: 'John Doe', timestamp: '2 days ago', content: 'Welcome to this forum! Let\'s share what works for us. I start by focusing on deep breathing.', comments: [{ author: 'Alice Johnson', text: 'Great points! I\'ve found deep breathing exercises particularly helpful.', timestamp: '2 hours ago' }, { author: 'Bob Williams', text: 'Thanks for sharing. Does anyone have tips for managing anxiety before presentations?', timestamp: '1 hour ago' }] },
+                { id: 'forum002', title: 'Coping with Academic Stress', description: 'Share experiences and tips on handling stress related to university studies and exams.', author: 'Jane Smith', timestamp: '1 day ago', content: 'Academic life can be tough. What are your best stress-busters?', comments: [] },
+                { id: 'forum003', title: 'Mindfulness Practices for Students', description: 'Explore different mindfulness exercises and their benefits for mental well-being.', author: 'Admin', timestamp: '5 hours ago', content: 'Mindfulness can truly transform your day. Share your favorite techniques here.', comments: [{ author: 'Student A', text: 'I love the guided meditations on this portal!', timestamp: '30 mins ago' }] }
+            ];
+
+            // --- Section Visibility Control ---
+            function showSection(sectionId) {
+                const sections = [forumListSection, forumPostSection, createNewForumSection];
+                sections.forEach(section => {
+                    if (section.id === sectionId) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+                // Always hide global message when switching sections
+                listMessageContainer.classList.add('hidden');
+                listMessageContainer.textContent = '';
+            }
+
+            // --- Load and Display Forum List (UC007 Normal Flow) ---
+            function loadForumList() {
+                forumsContainer.innerHTML = ''; // Clear existing cards
+                if (sampleForums.length === 0) {
+                    noForumsMessage.classList.remove('hidden');
+                } else {
+                    noForumsMessage.classList.add('hidden');
+                    sampleForums.forEach(forum => {
+                        const forumLink = document.createElement('a'); // Create the <a> element
+                        forumLink.href = "#"; // Prevent page refresh
+                        forumLink.className = 'forum-card-link';
+                        forumLink.dataset.forumId = forum.id; // Store ID for JS lookup
+
+                        const forumCard = document.createElement('div');
+                        forumCard.className = 'forum-card';
+                        forumCard.innerHTML = `
+                            <h5>${forum.title}</h5>
+                            <p>${forum.description}</p>
+                            <div class="meta">Started by: ${forum.author} | Last activity: ${forum.timestamp} | ${forum.comments.length} replies</div>
+                        `;
+                        forumLink.appendChild(forumCard); // Nest the card inside the link
+                        forumLink.addEventListener('click', (e) => {
+                            e.preventDefault(); // Prevent default link behavior
+                            showForumPost(forum.id);
+                        });
+                        forumsContainer.appendChild(forumLink);
+                    });
+                }
+                showSection('forumListSection');
+            }
+
+            // --- Search Forum (UC007 AF1) ---
+            forumSearchBar.addEventListener('keyup', function() {
+                const searchTerm = forumSearchBar.value.toLowerCase();
+                let foundAny = false;
+                document.querySelectorAll('.forum-card-link').forEach(link => { // Select the links
+                    const card = link.querySelector('.forum-card'); // Get the card inside
+                    const title = card.querySelector('h5').textContent.toLowerCase();
+                    const description = card.querySelector('p').textContent.toLowerCase();
+                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                        link.classList.remove('hidden');
+                        foundAny = true;
+                    } else {
+                        link.classList.add('hidden');
+                    }
+                });
+                if (!foundAny && searchTerm !== '') {
+                    noForumsMessage.textContent = 'No forums found matching your search.';
+                    noForumsMessage.classList.remove('hidden');
+                } else if (foundAny || searchTerm === '') {
+                    noForumsMessage.classList.add('hidden');
+                }
+            });
+
+            // --- Show Forum Post (UC007 & UC008 Normal Flow) ---
+            function showForumPost(forumId) {
+                const forum = sampleForums.find(f => f.id === forumId);
+                if (forum) {
+                    currentForumId = forum.id; // Store current forum ID for posting comments
+                    postTitle.textContent = forum.title;
+                    postAuthor.textContent = forum.author;
+                    postTimestamp.textContent = forum.timestamp;
+                    postContent.textContent = forum.content;
+
+                    commentsContainer.innerHTML = '';
+                    if (forum.comments && forum.comments.length > 0) {
+                        forum.comments.forEach(comment => {
+                            const commentItem = document.createElement('div');
+                            commentItem.className = 'comment-item';
+                            commentItem.innerHTML = `
+                                <div class="comment-author">${comment.author}</div>
+                                <p class="comment-text">${comment.text}</p>
+                                <div class="comment-timestamp">${comment.timestamp}</div>
+                            `;
+                            commentsContainer.appendChild(commentItem);
+                        });
+                    } else {
+                        commentsContainer.innerHTML = '<p class="text-gray-600">No comments yet. Be the first to share your thoughts!</p>';
+                    }
+                    commentText.value = ''; // Clear comment textarea
+                    commentMessage.classList.add('hidden'); // Hide any previous comment messages
+
+                    showSection('forumPostSection'); // This will hide others and show this one
+                } else {
+                    showMessage('error', 'Forum not found.', listMessageContainer);
+                    showSection('forumListSection');
+                }
+            }
+
+            backToForumsBtn.addEventListener('click', loadForumList);
+
+            // --- Post Comment (UC008 Normal Flow) ---
+            postCommentForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                if (!commentText.value.trim()) {
+                    showMessage('error', 'Comment cannot be empty.', commentMessage);
+                    return;
+                }
+
+                // Simulate posting comment (UC008 Normal Flow)
+                const forum = sampleForums.find(f => f.id === currentForumId);
+                if (forum) {
+                    const newComment = {
+                        author: "Current User", // Replace with actual logged-in user
+                        text: commentText.value.trim(),
+                        timestamp: new Date().toLocaleString() // More dynamic timestamp
+                    };
+                    forum.comments.push(newComment);
+                    showMessage('success', 'Comment posted successfully!', commentMessage);
+                    commentText.value = ''; // Clear textarea
+                    showForumPost(currentForumId); // Refresh the post view to show new comment
+                } else {
+                    showMessage('error', 'Error posting comment. Forum not found.', commentMessage);
+                }
+            });
+
+            cancelCommentBtn.addEventListener('click', function() {
+                commentText.value = ''; // Clear text
+                commentMessage.classList.add('hidden'); // Hide message
+            });
+
+            // --- Create New Forum (UC008 AF1) ---
+            createNewForumBtn.addEventListener('click', () => showSection('createNewForumSection'));
+            backToForumsFromCreateBtn.addEventListener('click', loadForumList);
+
+            createForumForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                if (!forumTitleInput.value.trim() || !forumDescriptionTextarea.value.trim()) {
+                    showMessage('error', 'Forum title and description cannot be empty.', createForumMessage);
+                    return;
+                }
+
+                // Simulate forum creation (UC008 AF1)
+                const newForum = {
+                    id: 'forum' + (sampleForums.length + 1).toString().padStart(3, '0'),
+                    title: forumTitleInput.value.trim(),
+                    description: forumDescriptionTextarea.value.trim(),
+                    author: "Current User", // Replace with actual logged-in user
+                    timestamp: "Just now",
+                    content: "This is a new forum discussion.", // Default content for new forums
+                    comments: []
+                };
+
+                // Simulate moderation (Admin screening)
+                const isModerated = Math.random() > 0.2; // 80% chance of passing moderation
+
+                if (isModerated) {
+                    sampleForums.push(newForum);
+                    showMessage('success', 'Forum submitted for review. It will be visible after moderation.', listMessageContainer);
+                    forumTitleInput.value = ''; // Clear form
+                    forumDescriptionTextarea.value = '';
+                    createForumMessage.classList.add('hidden'); // Hide any previous messages
+                    showSection('forumListSection'); // Return to list view
+                } else {
+                    showMessage('error', 'Forum creation rejected due to content. Please revise and resubmit.', createForumMessage);
+                }
+            });
+
+            cancelCreateForumBtn.addEventListener('click', function() {
+                forumTitleInput.value = '';
+                forumDescriptionTextarea.value = '';
+                createForumMessage.classList.add('hidden');
+                showSection('forumListSection');
+            });
+
+
+            // Helper function to display messages
+            function showMessage(type, message, element) {
+                element.classList.remove('success', 'error', 'hidden');
+                element.classList.add(type);
+                element.textContent = message;
+                if (element.id === 'listMessageContainer') { // Only for the global list message
+                    setTimeout(() => { element.classList.add('hidden'); }, 5000);
+                }
+            }
+
+            // Initial load
+            loadForumList();
+        });
+    </script>
+</body>
+</html>

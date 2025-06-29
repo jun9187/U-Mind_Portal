@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Mind Portal - My Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom global styles for the app (copied from app.html) */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #adb5bd;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        /* Profile Dropdown Specific Styles for Computer-Based View (copied from app.html) */
+        .profile-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+        .profile-dropdown-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            margin-right: 0.5rem;
+        }
+        .profile-name {
+            color: white;
+            margin-right: 0.5rem;
+        }
+        .dropdown-menu {
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            min-width: 160px;
+        }
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+        .dropdown-item:hover {
+            background-color: #f0f2f5;
+            color: #007bff;
+        }
+
+        /* Profile page specific styles */
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #007bff;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .profile-info label {
+            font-weight: 600;
+            color: #4a5568; /* Tailwind gray-700 */
+        }
+        .profile-info .form-control[readonly] {
+            background-color: #f8f9fa; /* Lighter background for non-editable fields */
+            cursor: default;
+        }
+        .message-alert {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            display: none !important; /* Always start hidden */
+        }
+        .message-alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+        .message-alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+        /* Crucial fix: Ensure Tailwind's 'hidden' class overrides other display properties */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <header class="shadow-md">
+        <nav class="navbar navbar-dark bg-primary py-3">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" href="dashboard.html">U-Mind Portal</a>
+                <div class="d-flex justify-content-end align-items-center" id="navbarNav">
+                    <ul class="navbar-nav flex-row align-items-center">
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="images/default.jpg" alt="Profile Picture" class="profile-pic">
+                                <span class="profile-name">Student Name</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="profile.html">My Profile</a></li>
+                                <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="index.html">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container my-5 flex-grow">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">My Profile</h2>
+
+        <div class="p-5 bg-white rounded-lg shadow-lg profile-container">
+            <div class="profile-header">
+                <img src="images/default.jpg" alt="User Avatar" class="profile-avatar">
+                <h3 class="text-2xl font-bold text-gray-800" id="profileDisplayName">Student Name</h3>
+                <p class="text-gray-600" id="profileEmail">student.name@example.com</p>
+            </div>
+
+            <form id="profileForm" class="profile-info">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="firstName" class="form-label">First Name:</label>
+                        <input type="text" class="form-control" id="firstName" value="Student" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="lastName" class="form-label">Last Name:</label>
+                        <input type="text" class="form-control" id="lastName" value="Name" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="email" class="form-control" id="email" value="student.name@example.com" readonly> </div>
+
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone Number:</label>
+                    <input type="tel" class="form-control" id="phone" value="+60123456789">
+                </div>
+
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address:</label>
+                    <input type="text" class="form-control" id="address" value="Universiti Teknologi Malaysia, Skudai">
+                </div>
+
+                <div class="mb-4">
+                    <label for="preferences" class="form-label">Mental Health Preferences:</label>
+                    <textarea class="form-control" id="preferences" rows="3" placeholder="e.g., prefer articles on stress, interested in group therapy">Interested in articles on anxiety management and techniques for better sleep.</textarea>
+                </div>
+                
+                <div id="profileMessage" class="message-alert hidden" role="alert"></div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button type="button" id="cancelProfileChanges" class="btn btn-secondary me-md-2">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-dark text-white">
+        <div class="container text-center">
+            <p class="mb-1">&copy; 2025 U-Mind Portal. All rights reserved.</p>
+            <p class="mb-0">
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Privacy Policy</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Terms of Service</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Contact Us</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileForm = document.getElementById('profileForm');
+            const firstNameInput = document.getElementById('firstName');
+            const lastNameInput = document.getElementById('lastName');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            const addressInput = document.getElementById('address');
+            const preferencesTextarea = document.getElementById('preferences');
+            const profileMessage = document.getElementById('profileMessage');
+            const cancelProfileChangesBtn = document.getElementById('cancelProfileChanges');
+
+            // Sample user data (replace with actual data fetched from a "backend")
+            let currentUserProfile = {
+                firstName: "Current",
+                lastName: "User",
+                email: "current.user@example.com",
+                phone: "+60123456789",
+                address: "Universiti Teknologi Malaysia, Skudai, Johor",
+                preferences: "Interested in articles on anxiety management and techniques for better sleep."
+            };
+
+            // --- Load profile data on page load (UC006 Normal Flow: System displays current profile details) ---
+            function loadProfileData() {
+                firstNameInput.value = currentUserProfile.firstName;
+                lastNameInput.value = currentUserProfile.lastName;
+                emailInput.value = currentUserProfile.email;
+                phoneInput.value = currentUserProfile.phone;
+                addressInput.value = currentUserProfile.address;
+                preferencesTextarea.value = currentUserProfile.preferences;
+
+                document.getElementById('profileDisplayName').textContent = `${currentUserProfile.firstName} ${currentUserProfile.lastName}`;
+                document.getElementById('profileEmail').textContent = currentUserProfile.email;
+                // Update profile pic in header (conceptual, would involve JS in real app)
+                document.querySelector('.profile-name').textContent = `${currentUserProfile.firstName} ${currentUserProfile.lastName}`;
+            }
+
+            loadProfileData(); // Call on page load
+
+            // --- Handle form submission (UC006 Normal Flow: Actor updates profile details) ---
+            profileForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                // Basic validation (UC006 AF1: Actor leaves some required fields empty)
+                if (!firstNameInput.value.trim() || !lastNameInput.value.trim() || !phoneInput.value.trim()) {
+                    showMessage('error', 'First Name, Last Name, and Phone Number are required fields.', profileMessage);
+                    return;
+                }
+
+                // Simulate update (UC006 Normal Flow: System validates and updates)
+                const updatedProfile = {
+                    firstName: firstNameInput.value.trim(),
+                    lastName: lastNameInput.value.trim(),
+                    email: emailInput.value.trim(), // Email is readonly, so just take current value
+                    phone: phoneInput.value.trim(),
+                    address: addressInput.value.trim(),
+                    preferences: preferencesTextarea.value.trim()
+                };
+
+                const isError = Math.random() < 0.1; // Simulate 10% chance of error
+                const isSessionTimeout = Math.random() < 0.05; // Simulate 5% chance of session timeout (EF1)
+
+                if (isSessionTimeout) {
+                    showMessage('error', 'Session timed out. Please log in again.', profileMessage);
+                    // Simulate logout (UC006 EF1)
+                    setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+                    return;
+                }
+
+                if (isError) {
+                    showMessage('error', 'Failed to save changes due to a system error. Please try again.', profileMessage); // UC006 EF2
+                } else {
+                    // Update the local sample data
+                    currentUserProfile = updatedProfile;
+                    loadProfileData(); // Re-load to update display names
+                    showMessage('success', 'Profile updated successfully!', profileMessage); // UC006 Normal Flow Step 7
+                }
+            });
+
+            // --- Handle Cancel button (UC006 AF2) ---
+            cancelProfileChangesBtn.addEventListener('click', function() {
+                if (confirm("Are you sure you want to discard changes?")) {
+                    loadProfileData(); // Revert to original loaded data
+                    profileMessage.classList.add('hidden'); // Hide any messages
+                    showMessage('success', 'Changes discarded.', profileMessage); // Optional confirmation
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html'; // Redirect to dashboard
+                    }, 1000); // Short delay
+                }
+            });
+
+            // Helper function to display messages
+            function showMessage(type, message, element) {
+                element.classList.remove('success', 'error', 'hidden'); // Remove previous types and ensure visible
+                element.classList.add(type);
+                element.textContent = message;
+                element.classList.remove('hidden'); // Ensure it's visible
+            }
+        });
+    </script>
+</body>
+</html>

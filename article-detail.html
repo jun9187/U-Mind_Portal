@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Mind Portal - Article Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom global styles for the app (copied from app.html) */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #adb5bd;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        /* Profile Dropdown Specific Styles for Computer-Based View (copied from app.html) */
+        .profile-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+        .profile-dropdown-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            margin-right: 0.5rem;
+        }
+        .profile-name {
+            color: white;
+            margin-right: 0.5rem;
+        }
+        .dropdown-menu {
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            min-width: 160px;
+        }
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+        .dropdown-item:hover {
+            background-color: #f0f2f5;
+            color: #007bff;
+        }
+
+        /* Article detail specific styles */
+        .article-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .article-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        .article-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .article-meta {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        .article-content p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        .article-content h3 {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #333;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .article-content ul {
+            list-style: disc;
+            margin-left: 25px;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        .article-content li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="shadow-md">
+        <nav class="navbar navbar-dark bg-primary py-3">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" href="dashboard.html">U-Mind Portal</a>
+                <div class="d-flex justify-content-end align-items-center" id="navbarNav">
+                    <ul class="navbar-nav flex-row align-items-center">
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="images/default.jpg" alt="Profile Picture" class="profile-pic">
+                                <span class="profile-name">Student Name</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="profile.html">My Profile</a></li>
+                                <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="index.html">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container my-5 flex-grow">
+        <div class="p-5 bg-white rounded-lg shadow-lg article-container">
+            <button class="btn btn-secondary btn-sm mb-4" onclick="window.history.back()">← Back to Educational Content</button>
+            
+            <img src="images/article.jpg" alt="Article Cover Image" class="article-image">
+            
+            <h1 class="article-title">Understanding Anxiety: A Comprehensive Guide</h1>
+            <div class="article-meta">
+                By Dr. Emily White | Published on July 29, 2025 | Category: Anxiety, Mental Health Basics
+            </div>
+
+            <div class="article-content">
+                <p>Anxiety is a common human emotion that everyone experiences at some point. It's that feeling of uneasiness, worry, or fear, ranging from mild apprehension to intense panic. [cite_start]While a certain level of anxiety can be a normal and even healthy response to stress, such as before an exam or a job interview, it can become problematic when it's persistent, overwhelming, and interferes with daily life. [cite: 4]</p>
+
+                <h3>What are the Symptoms of Anxiety?</h3>
+                <p>Anxiety symptoms can manifest in various ways, affecting both your mind and body. [cite_start]Recognizing these signs early can be crucial for effective management and seeking help. [cite: 16]</p>
+                <ul>
+                    <li>**Emotional Symptoms:** Feelings of dread or apprehension, restlessness, irritability, difficulty concentrating, and feeling constantly "on edge."</li>
+                    <li>**Physical Symptoms:** Increased heart rate, rapid breathing (hyperventilation), sweating, trembling, feeling weak or tired, digestive problems (like an upset stomach), and sleep disturbances.</li>
+                    <li>**Behavioral Symptoms:** Avoiding situations that trigger anxiety, changes in eating habits, and social withdrawal.</li>
+                </ul>
+
+                <h3>Common Causes of Anxiety</h3>
+                [cite_start]<p>Anxiety can stem from a variety of factors, often a combination of genetics, brain chemistry, personality, and life events. [cite: 4]</p>
+                <ul>
+                    [cite_start]<li>**Stress:** Academic pressures, financial concerns, and social adjustments are increasingly prevalent triggers among higher education students. [cite: 4]</li>
+                    <li>**Medical Conditions:** Certain physical health problems, such as thyroid issues or heart disease, can mimic or cause anxiety symptoms.</li>
+                    <li>**Genetics:** A family history of anxiety disorders can increase one's predisposition.</li>
+                    <li>**Trauma:** Past traumatic experiences can lead to anxiety disorders like PTSD.</li>
+                    <li>**Substance Use:** Caffeine, alcohol, and certain medications can induce or worsen anxiety.</li>
+                </ul>
+
+                <h3>Coping Strategies and Seeking Support</h3>
+                [cite_start]<p>If anxiety is affecting your quality of life, there are many effective coping strategies and support options available. [cite: 6]</p>
+                <ul>
+                    <li>**Mindfulness and Relaxation:** Techniques like deep breathing, meditation, and yoga can help calm the nervous system.</li>
+                    <li>**Cognitive Behavioral Therapy (CBT):** A type of therapy that helps you identify and change negative thought patterns.</li>
+                    <li>**Lifestyle Changes:** Regular exercise, a balanced diet, adequate sleep, and limiting caffeine/alcohol can significantly reduce symptoms.</li>
+                    <li>**Professional Support:** Don't hesitate to seek help from mental health professionals. [cite_start]Services like counseling and telehealth options are available. [cite: 11]</li>
+                    [cite_start]<li>**Peer Support:** Engaging in open discussions about mental health and sharing coping experiences can be highly beneficial. [cite: 12]</li>
+                </ul>
+                [cite_start]<p>The U-Mind Portal offers self-assessment tools, educational content, and virtual support channels to help you manage your mental well-being effectively. [cite: 8]</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-dark text-white">
+        <div class="container text-center">
+            <p class="mb-1">&copy; 2025 U-Mind Portal. All rights reserved.</p>
+            <p class="mb-0">
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Privacy Policy</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Terms of Service</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Contact Us</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

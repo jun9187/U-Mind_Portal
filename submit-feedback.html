@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Mind Portal - Submit Feedback</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom global styles for the app (copied from app.html) */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #adb5bd;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        /* Profile Dropdown Specific Styles for Computer-Based View (copied from app.html) */
+        .profile-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+        .profile-dropdown-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            margin-right: 0.5rem;
+        }
+        .profile-name {
+            color: white;
+            margin-right: 0.5rem;
+        }
+        .dropdown-menu {
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            min-width: 160px;
+        }
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+        .dropdown-item:hover {
+            background-color: #f0f2f5;
+            color: #007bff;
+        }
+
+        /* Feedback Form specific styles */
+        .feedback-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .rating-stars {
+            display: flex;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #ccc;
+            cursor: pointer;
+            margin-bottom: 25px;
+        }
+        .rating-stars .star {
+            transition: color 0.2s ease;
+        }
+        .rating-stars .star.selected,
+        .rating-stars .star:hover,
+        .rating-stars .star.selected ~ .star {
+            color: #ffc107; /* Gold color for selected/hovered stars */
+        }
+        .rating-stars .star:hover ~ .star {
+            color: #ccc; /* Reset color for stars after hovered one */
+        }
+        .message-alert {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            /* Ensure it's hidden by default, and visible when JS removes 'hidden' */
+        }
+        .message-alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+        .message-alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+        /* Crucial fix: Ensure Tailwind's 'hidden' class overrides other display properties */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <header class="shadow-md">
+        <nav class="navbar navbar-dark bg-primary py-3">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" href="dashboard.html">U-Mind Portal</a>
+                <div class="d-flex justify-content-end align-items-center" id="navbarNav">
+                    <ul class="navbar-nav flex-row align-items-center">
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle profile-dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="images/default.jpg" alt="Profile Picture" class="profile-pic">
+                                <span class="profile-name">Student Name</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="profile.html">My Profile</a></li>
+                                <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="index.html">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container my-5 flex-grow">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Submit Feedback</h2>
+
+        <div class="p-5 bg-white rounded-lg shadow-lg feedback-container">
+            <p class="text-center text-gray-700 mb-6">Your feedback helps us improve the U-Mind Portal experience!</p>
+
+            <form id="feedbackForm">
+                <div class="mb-4 text-center">
+                    <label class="form-label text-lg font-semibold text-gray-700 mb-3">Overall Rating:</label>
+                    <div class="rating-stars" id="ratingStars">
+                        <span class="star" data-value="1">&#9733;</span> <span class="star" data-value="2">&#9733;</span>
+                        <span class="star" data-value="3">&#9733;</span>
+                        <span class="star" data-value="4">&#9733;</span>
+                        <span class="star" data-value="5">&#9733;</span>
+                    </div>
+                    <input type="hidden" id="selectedRating" name="rating" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="feedbackComments" class="form-label text-lg font-semibold text-gray-700">Comments/Suggestions:</label>
+                    <textarea class="form-control" id="feedbackComments" rows="7" placeholder="Share your thoughts about your experience, services, or suggestions for new features."></textarea>
+                </div>
+
+                <div id="feedbackMessage" class="message-alert hidden" role="alert"></div> <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg font-semibold hover:bg-blue-600 transition duration-300">Submit Feedback</button>
+                    <button type="button" id="cancelFeedback" class="btn btn-outline-secondary btn-lg font-semibold hover:bg-gray-200 transition duration-300">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-dark text-white">
+        <div class="container text-center">
+            <p class="mb-1">&copy; 2025 U-Mind Portal. All rights reserved.</p>
+            <p class="mb-0">
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Privacy Policy</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Terms of Service</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-2">Contact Us</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const feedbackForm = document.getElementById('feedbackForm');
+            const ratingStars = document.getElementById('ratingStars');
+            const selectedRatingInput = document.getElementById('selectedRating');
+            const feedbackComments = document.getElementById('feedbackComments');
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            const cancelFeedbackBtn = document.getElementById('cancelFeedback');
+
+            let currentRating = 0; // To store the selected rating
+
+            // --- Rating Stars Logic (UC011 Normal Flow: Fills in form) ---
+            ratingStars.addEventListener('mouseover', function(e) {
+                if (e.target.classList.contains('star')) {
+                    const value = parseInt(e.target.dataset.value);
+                    document.querySelectorAll('.rating-stars .star').forEach(star => {
+                        if (parseInt(star.dataset.value) <= value) {
+                            star.classList.add('selected');
+                        } else {
+                            star.classList.remove('selected');
+                        }
+                    });
+                }
+            });
+
+            ratingStars.addEventListener('mouseout', function() {
+                // Reset to currentRating or clear if no rating selected
+                document.querySelectorAll('.rating-stars .star').forEach(star => {
+                    if (parseInt(star.dataset.value) <= currentRating) {
+                        star.classList.add('selected');
+                    } else {
+                        star.classList.remove('selected');
+                    }
+                });
+            });
+
+            ratingStars.addEventListener('click', function(e) {
+                if (e.target.classList.contains('star')) {
+                    currentRating = parseInt(e.target.dataset.value);
+                    selectedRatingInput.value = currentRating; // Set hidden input value
+                    feedbackMessage.classList.add('hidden'); // Hide any previous error messages
+                    // Apply 'selected' class permanently based on currentRating
+                    document.querySelectorAll('.rating-stars .star').forEach(star => {
+                        if (parseInt(star.dataset.value) <= currentRating) {
+                            star.classList.add('selected');
+                        } else {
+                            star.classList.remove('selected');
+                        }
+                    });
+                }
+            });
+
+            // --- Form Submission (UC011 Normal Flow: Submits feedback) ---
+            feedbackForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                // UC011 AF1: Student leaves form incomplete (rating is required)
+                if (selectedRatingInput.value === '') {
+                    showMessage('error', 'Please provide an overall rating.', feedbackMessage);
+                    return;
+                }
+
+                // Simulate feedback storage (UC011 Normal Flow: System stores feedback)
+                const feedbackData = {
+                    rating: currentRating,
+                    comments: feedbackComments.value.trim(),
+                    timestamp: new Date().toLocaleString()
+                };
+
+                const isError = Math.random() < 0.1; // Simulate 10% chance of error
+
+                if (isError) {
+                    showMessage('error', 'Failed to submit feedback due to a system error. Please try again.', feedbackMessage);
+                } else {
+                    // In a real application, feedbackData would be sent to a backend
+                    console.log("Feedback Submitted:", feedbackData);
+                    showMessage('success', 'Thank you! Your feedback has been submitted successfully. Redirecting back to dashboard...', feedbackMessage);
+                    // Clear form after successful submission
+                    feedbackForm.reset();
+                    currentRating = 0; // Reset rating visually
+                    document.querySelectorAll('.rating-stars .star').forEach(star => star.classList.remove('selected'));
+                    
+                    // Delay redirection to allow user to see the success message
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html'; // Redirect to dashboard after a delay
+                    }, 2000); // 2-second delay
+                }
+            });
+
+            // --- Cancel Feedback (UC011 Alternative Flow) ---
+            cancelFeedbackBtn.addEventListener('click', function() {
+                if (confirm("Are you sure you want to cancel? Your feedback will not be submitted.")) {
+                    window.location.href = 'dashboard.html'; // Redirect to dashboard
+                }
+            });
+
+            // Helper function to display messages
+            function showMessage(type, message, element) {
+                element.classList.remove('success', 'error', 'hidden'); // Ensure hidden is removed
+                element.classList.add(type);
+                element.textContent = message;
+                // No setTimeout here, as this message should stay until redirection or new action
+            }
+        });
+    </script>
+</body>
+</html>
